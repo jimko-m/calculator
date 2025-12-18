@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # --------------------------------------
-# --- Setup project and push to GitHub ---
+# --- Setup project and push to GitHub with PAT and .gitignore ---
 # --------------------------------------
 
 # --- GitHub repository URL ---
-REPO_URL="https://github.com/jimko-m/calculator-.git"
+REPO_URL="https://github.com/username/calculator-.git"
 
 # --- Project name for LICENSE ---
 PROJECT_NAME="Calculator Flet Project"
@@ -27,17 +27,21 @@ then
 fi
 
 # --- Set Git global user if not set ---
-GIT_NAME=$(git config --global jimko-m)
-GIT_EMAIL=$(git config --global abdehassni1@gmail.com)
+GIT_NAME=$(git config --global user.name)
+GIT_EMAIL=$(git config --global user.email)
 
 if [ -z "$GIT_NAME" ]; then
-    git config --global user.name "Your Name"
-    echo "Git global user.name set to 'Your Name'"
+    read -p "Enter your GitHub name: " INPUT_NAME
+    git config --global user.name "$INPUT_NAME"
+else
+    INPUT_NAME=$GIT_NAME
 fi
 
 if [ -z "$GIT_EMAIL" ]; then
-    git config --global user.email "you@example.com"
-    echo "Git global user.email set to 'you@example.com'"
+    read -p "Enter your GitHub email: " INPUT_EMAIL
+    git config --global user.email "$INPUT_EMAIL"
+else
+    INPUT_EMAIL=$GIT_EMAIL
 fi
 
 # --- Create MIT LICENSE if not exists ---
@@ -46,7 +50,7 @@ if [ ! -f "LICENSE" ]; then
     cat <<EOL > LICENSE
 MIT License
 
-Copyright (c) $YEAR abde@M
+Copyright (c) $YEAR $INPUT_NAME
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -69,6 +73,25 @@ EOL
     echo "LICENSE file created successfully."
 fi
 
+# --- Create .gitignore for Python and Flet ---
+if [ ! -f ".gitignore" ]; then
+    cat <<EOL > .gitignore
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.swp
+*.egg-info/
+dist/
+build/
+
+# Flet
+*.flet/
+EOL
+    echo ".gitignore file created successfully."
+fi
+
 # --- Fix dubious ownership issue (Termux / Android) ---
 git config --global --add safe.directory "$(pwd)"
 
@@ -81,13 +104,21 @@ git add .
 # --- First commit ---
 git commit -m "Initial commit: $PROJECT_NAME with MIT License"
 
+# --- Remove existing remote if exists ---
+git remote remove origin 2>/dev/null
+
 # --- Add remote repository ---
 git remote add origin $REPO_URL
 
 # --- Rename branch to main ---
 git branch -M main
 
-# --- Push to GitHub ---
-git push -u origin main
+# --- Prompt for GitHub username and Personal Access Token ---
+read -p "Enter your GitHub username: " GH_USER
+read -s -p "Enter your GitHub Personal Access Token: " GH_TOKEN
+echo
+
+# --- Push to GitHub using token ---
+git push https://$GH_USER:$GH_TOKEN@$(echo $REPO_URL | sed 's|https://||') main
 
 echo "Project has been successfully pushed to GitHub!"
