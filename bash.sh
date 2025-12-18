@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # --------------------------------------
-# --- Setup project and push to GitHub with PAT and .gitignore ---
+# --- Fully automated GitHub push script ---
 # --------------------------------------
 
-# --- GitHub repository URL ---
-REPO_URL=" https://github.com/jimko-m/calculator.git"
+# --- GitHub repository URL (replace with your repo) ---
+REPO_URL="https://github.com/jimko-m/calculator.git"
 
 # --- Project name for LICENSE ---
 PROJECT_NAME="Calculator Flet Project"
@@ -101,8 +101,8 @@ git init
 # --- Add all files ---
 git add .
 
-# --- First commit ---
-git commit -m "Initial commit: $PROJECT_NAME with MIT License"
+# --- First commit if needed ---
+git commit -m "Initial commit: $PROJECT_NAME with MIT License" 2>/dev/null
 
 # --- Remove existing remote if exists ---
 git remote remove origin 2>/dev/null
@@ -117,6 +117,9 @@ git branch -M main
 read -p "Enter your GitHub username: " GH_USER
 read -s -p "Enter your GitHub Personal Access Token: " GH_TOKEN
 echo
+
+# --- Pull remote changes to avoid rejected push ---
+git pull https://$GH_USER:$GH_TOKEN@$(echo $REPO_URL | sed 's|https://||') main --rebase 2>/dev/null
 
 # --- Push to GitHub using token ---
 git push https://$GH_USER:$GH_TOKEN@$(echo $REPO_URL | sed 's|https://||') main
