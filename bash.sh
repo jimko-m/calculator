@@ -5,7 +5,7 @@
 # --------------------------------------
 
 # --- GitHub repository URL ---
-REPO_URL=" https://github.com/jimko-m/calculator-.git"
+REPO_URL=" https://github.com/jimko-m/calculator.git"
 
 # --- Project name for LICENSE ---
 PROJECT_NAME="Calculator Flet Project"
