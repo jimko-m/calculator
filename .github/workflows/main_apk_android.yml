@@ -1,0 +1,33 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.11
+
+    - name: Install dependencies
+      run: |
+        pip install briefcase==0.5.14
+        pip install -r requirements.txt
+
+    - name: Create Android Project
+      run: |
+        briefcase create android
+        briefcase build android
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: flet-calculator-apk
+        path: android/build/android/app/bin/*.apk
