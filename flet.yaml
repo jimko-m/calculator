@@ -1,3 +1,4 @@
+
 name: Build Android APK
 
 on:
@@ -9,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -25,10 +26,9 @@ jobs:
       run: |
         briefcase create android
         briefcase build android
-        briefcase run android
 
     - name: Upload APK
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: flet-calculator-apk
         path: android/build/android/app/bin/*.apk
